@@ -1,11 +1,14 @@
 import { Module } from '@nestjs/common';
-import { ProductModule } from './product/product.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { AuthModule } from './auth/auth.module';
 import { UserModule } from './user/user.module';
 import { AccessTokenGuard } from './core/guards/access-token.guard';
 import { IsUUIDGuard } from './core/guards/is-uuid.guard';
 import { FilesModule } from './files/files.module';
+import { ProductModule } from './product/product.module';
+import { ProvisionerModule } from './provisioner/provisioner.module';
+import { SupplyModule } from './supply/supply.module';
+import { SalesModule } from './sales/sales.module';
 
 @Module({
   imports: [
@@ -24,6 +27,9 @@ import { FilesModule } from './files/files.module';
     UserModule,
     ProductModule,
     FilesModule,
+    ProvisionerModule,
+    SupplyModule,
+    SalesModule,
   ],
   providers: [
     {

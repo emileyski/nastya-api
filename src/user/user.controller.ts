@@ -72,7 +72,6 @@ export class UserController {
   async update(
     @UserId() userId: string,
     @Body() userData: CreateUserDto,
-
     @UploadedFile() picture,
   ) {
     const user = await this.userService.update(userId, userData, picture);

@@ -77,11 +77,12 @@ export class UserService {
       if (picture) {
         const { id: pictureId } = await this.filesService.saveOne(picture);
         await this.setPicture(user.id, pictureId);
+        newUser.picture = pictureId;
       }
 
       return this.createReturnableUser(newUser);
     } catch (error) {
-      throw new ConflictException('User already exists');
+      throw new ConflictException('User with this email is already exists');
     }
   }
 
