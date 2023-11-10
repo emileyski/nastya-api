@@ -1,6 +1,7 @@
 import { Product } from 'src/product/entities/product.entity';
 import { Provisioner } from 'src/provisioner/entities/provisioner.entity';
 import { Sale } from 'src/sales/entities/sale.entity';
+import { SupplySale } from 'src/supply-sales/entities/supply-sale.entity';
 import {
   Column,
   Entity,
@@ -38,6 +39,6 @@ export class Supply {
   @ManyToOne(() => Provisioner, (provisioner) => provisioner.supplies)
   provisioner: Provisioner;
 
-  @OneToMany(() => Sale, (sale) => sale.supply)
-  sales: Sale[];
+  @OneToMany(() => SupplySale, (sale) => sale.supply)
+  sales: SupplySale[];
 }

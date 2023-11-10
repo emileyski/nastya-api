@@ -9,6 +9,7 @@ import { ProductModule } from './product/product.module';
 import { ProvisionerModule } from './provisioner/provisioner.module';
 import { SupplyModule } from './supply/supply.module';
 import { SalesModule } from './sales/sales.module';
+import { SupplySalesModule } from './supply-sales/supply-sales.module';
 
 @Module({
   imports: [
@@ -30,6 +31,7 @@ import { SalesModule } from './sales/sales.module';
     ProvisionerModule,
     SupplyModule,
     SalesModule,
+    SupplySalesModule,
   ],
   providers: [
     {

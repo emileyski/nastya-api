@@ -33,6 +33,12 @@ export class SupplyController {
   }
 
   @UseGuards(AccessTokenGuard)
+  @Get('in-stock')
+  findAllInStock() {
+    return this.supplyService.findAllInStock();
+  }
+
+  @UseGuards(AccessTokenGuard)
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.supplyService.findOne(id);
@@ -53,5 +59,11 @@ export class SupplyController {
   @Patch(':id/put-to-sale')
   putToSale(@Param('id') id: string) {
     return this.supplyService.putToSale(id);
+  }
+
+  @UseGuards(AccessTokenGuard)
+  @Patch(':id/remove-from-sale')
+  removeFromSale(@Param('id') id: string) {
+    return this.supplyService.removeFromSale(id);
   }
 }

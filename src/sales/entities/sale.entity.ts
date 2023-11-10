@@ -1,17 +1,17 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne } from 'typeorm';
-import { Supply } from 'src/supply/entities/supply.entity';
+import { SupplySale } from 'src/supply-sales/entities/supply-sale.entity';
+import { Entity, PrimaryGeneratedColumn, Column, OneToMany } from 'typeorm';
 
 @Entity()
 export class Sale {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @Column()
+  @Column({ default: new Date() })
   soldAt: Date;
 
   @Column()
-  count: number;
+  totalPrice: number;
 
-  @ManyToOne(() => Supply, (supply) => supply.sales)
-  supply: Supply;
+  @OneToMany(() => SupplySale, (supplySale) => supplySale.sale)
+  supplySales: SupplySale[];
 }
