@@ -13,6 +13,9 @@ import { CreateProvisionerDto } from './dto/create-provisioner.dto';
 import { UpdateProvisionerDto } from './dto/update-provisioner.dto';
 import { ApiTags, ApiUnauthorizedResponse } from '@nestjs/swagger';
 import { AccessTokenGuard } from 'src/core/guards/access-token.guard';
+import { Public } from 'src/core/decorators/public.decorator';
+import { MailService } from 'src/mail/mail.service';
+import { MailToProvisionerDto } from './dto/mail-to-provisioner.dto';
 
 @ApiTags('provisioner')
 @Controller('provisioner')
@@ -51,5 +54,15 @@ export class ProvisionerController {
   @Delete(':id')
   remove(@Param('id') id: string) {
     return this.provisionerService.remove(id);
+  }
+
+  @Public()
+  @Post('email/:email')
+  sendEmail(@Param('email') email: string, @Body() body: MailToProvisionerDto) {
+    return this.provisionerService.sendEmailToProvisioner(
+      email,
+      'New Order',
+      body,
+    );
   }
 }

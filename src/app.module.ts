@@ -10,6 +10,8 @@ import { ProvisionerModule } from './provisioner/provisioner.module';
 import { SupplyModule } from './supply/supply.module';
 import { SalesModule } from './sales/sales.module';
 import { SupplySalesModule } from './supply-sales/supply-sales.module';
+import { MailerModule } from '@nestjs-modules/mailer';
+import { HandlebarsAdapter } from '@nestjs-modules/mailer/dist/adapters/handlebars.adapter';
 
 @Module({
   imports: [
@@ -24,6 +26,21 @@ import { SupplySalesModule } from './supply-sales/supply-sales.module';
       synchronize: true,
       entities: [__dirname + '/**/*.entity{.ts,.js}'],
     }),
+    MailerModule.forRootAsync({
+      useFactory: () => ({
+        transport: {
+          service: 'gmail',
+          auth: {
+            user: 'anastasiia.chernova@nure.ua',
+            pass: 'eyzsufzazjptxvao',
+          },
+        },
+        defaults: {
+          from: '"nest-modules" <modules@nestjs.com>',
+        },
+      }),
+    }),
+
     AuthModule,
     UserModule,
     ProductModule,

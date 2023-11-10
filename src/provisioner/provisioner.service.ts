@@ -4,12 +4,15 @@ import { UpdateProvisionerDto } from './dto/update-provisioner.dto';
 import { Provisioner } from './entities/provisioner.entity';
 import { Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
+import { MailService } from 'src/mail/mail.service';
+import { MailToProvisionerDto } from './dto/mail-to-provisioner.dto';
 
 @Injectable()
 export class ProvisionerService {
   constructor(
     @InjectRepository(Provisioner)
     private readonly provisionerRepository: Repository<Provisioner>,
+    private readonly mailService: MailService,
   ) {}
 
   create(createProvisionerDto: CreateProvisionerDto) {
@@ -50,5 +53,13 @@ export class ProvisionerService {
     }
 
     return { message: `Provisioner with id ${id} was deleted` };
+  }
+
+  async sendEmailToProvisioner(
+    email: string,
+    subject: string,
+    products: MailToProvisionerDto,
+  ) {
+    return this.mailService.sendEmailToProvisioner(email, subject, products);
   }
 }
