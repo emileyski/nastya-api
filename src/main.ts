@@ -8,8 +8,8 @@ async function bootstrap() {
   app.setGlobalPrefix('api');
 
   const options = new DocumentBuilder()
-    .setTitle('Skillhub backend')
-    .setDescription('Skillhub API')
+    .setTitle('Shop backend')
+    .setDescription('Shop API')
     .setVersion('1.0')
     .addTag('auth')
     .build();
