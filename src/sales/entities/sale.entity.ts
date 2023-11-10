@@ -12,6 +12,8 @@ export class Sale {
   @Column()
   totalPrice: number;
 
-  @OneToMany(() => SupplySale, (supplySale) => supplySale.sale)
+  @OneToMany(() => SupplySale, (supplySale) => supplySale.sale, {
+    onDelete: 'CASCADE',
+  })
   supplySales: SupplySale[];
 }

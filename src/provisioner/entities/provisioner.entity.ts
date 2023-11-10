@@ -18,7 +18,9 @@ export class Provisioner {
   @Column()
   address: string;
 
-  @OneToMany(() => Supply, (supply) => supply.provisioner)
+  @OneToMany(() => Supply, (supply) => supply.provisioner, {
+    onDelete: 'CASCADE',
+  })
   supplies: Supply[];
 
   @Column({ nullable: true })

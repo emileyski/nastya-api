@@ -36,9 +36,11 @@ export class Supply {
   @ManyToOne(() => Product, (product) => product.supplies)
   product: Product;
 
-  @ManyToOne(() => Provisioner, (provisioner) => provisioner.supplies)
+  @ManyToOne(() => Provisioner, (provisioner) => provisioner.supplies, {
+    onDelete: 'CASCADE',
+  })
   provisioner: Provisioner;
 
-  @OneToMany(() => SupplySale, (sale) => sale.supply)
+  @OneToMany(() => SupplySale, (sale) => sale.supply, { onDelete: 'CASCADE' })
   sales: SupplySale[];
 }

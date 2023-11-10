@@ -10,9 +10,9 @@ export class SupplySale {
   @Column()
   count: number;
 
-  @ManyToOne(() => Supply, (supply) => supply.sales)
+  @ManyToOne(() => Supply, (supply) => supply.sales, { onDelete: 'CASCADE' })
   supply: Supply;
 
-  @ManyToOne(() => Sale, (sale) => sale.supplySales)
+  @ManyToOne(() => Sale, (sale) => sale.supplySales, { onDelete: 'CASCADE' })
   sale: Supply;
 }
