@@ -12,10 +12,12 @@ import { SalesModule } from './sales/sales.module';
 import { SupplySalesModule } from './supply-sales/supply-sales.module';
 import { MailerModule } from '@nestjs-modules/mailer';
 import { HandlebarsAdapter } from '@nestjs-modules/mailer/dist/adapters/handlebars.adapter';
+import { StatisticsModule } from './statistics/statistics.module';
 
 @Module({
   imports: [
     TypeOrmModule.forRoot({
+      name: 'default',
       type: 'postgres',
       host: 'localhost',
       port: 5432,
@@ -49,6 +51,7 @@ import { HandlebarsAdapter } from '@nestjs-modules/mailer/dist/adapters/handleba
     SupplyModule,
     SalesModule,
     SupplySalesModule,
+    StatisticsModule,
   ],
   providers: [
     {

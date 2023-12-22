@@ -2,7 +2,7 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateProvisionerDto } from './dto/create-provisioner.dto';
 import { UpdateProvisionerDto } from './dto/update-provisioner.dto';
 import { Provisioner } from './entities/provisioner.entity';
-import { Repository } from 'typeorm';
+import { Like, Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
 import { MailService } from 'src/mail/mail.service';
 import { MailToProvisionerDto } from './dto/mail-to-provisioner.dto';
@@ -19,10 +19,30 @@ export class ProvisionerService {
     return this.provisionerRepository.save(createProvisionerDto);
   }
 
-  //TODO: add pagination
-  //TODO: add filters
-  findAll() {
-    return this.provisionerRepository.find();
+  async findAll(
+    page: number,
+    perPage: number,
+    name: string,
+  ): Promise<{
+    data: Provisioner[];
+    page: number;
+    perPage: number;
+    totalPages: number;
+  }> {
+    const [data, total] = await this.provisionerRepository.findAndCount({
+      where: {
+        name: name ? Like(`%${name}%`) : Like('%%'),
+      },
+      skip: (page - 1) * perPage,
+      take: perPage,
+    });
+
+    return {
+      data,
+      page: +page,
+      perPage: +perPage,
+      totalPages: Math.ceil(total / perPage),
+    };
   }
 
   findOne(id: string) {

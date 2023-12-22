@@ -5,7 +5,7 @@ import {
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from './entities/user.entity';
-import { Repository } from 'typeorm';
+import { ILike, Like, Repository } from 'typeorm';
 import { CreateUserDto } from './dto/create-user.dto';
 import { hash } from 'argon2';
 import { UpdateUserDto } from './dto/update-user.dto';
@@ -86,6 +86,16 @@ export class UserService {
     }
   }
 
+  async delete(id: string) {
+    const user = await this.findOne(id);
+    if (!user) throw new NotFoundException('User not found');
+
+    await this.usersRepository.delete(id);
+    if (user.picture) await this.filesService.deleteFileById(user.picture);
+
+    return { message: 'User deleted' };
+  }
+
   async setRole(id: string, role: Roles): Promise<User> {
     const user = await this.findOne(id);
     user.role = role;
@@ -100,6 +110,34 @@ export class UserService {
     }
 
     return user;
+  }
+
+  async findAll(
+    page: number,
+    perPage: number,
+    name: string,
+  ): Promise<{
+    data: User[];
+    page: number;
+    perPage: number;
+    totalPages: number;
+  }> {
+    const [users, total] = await this.usersRepository.findAndCount({
+      where: {
+        name: name ? Like(`%${name}%`) : Like('%%'),
+      },
+      skip: (page - 1) * perPage,
+      take: perPage,
+    });
+
+    const totalPages = Math.ceil(total / perPage);
+
+    return {
+      data: users.map((user) => this.createReturnableUser(user)),
+      page: +page,
+      perPage: +perPage,
+      totalPages: +totalPages,
+    };
   }
 
   async findOneByEmail(email: string): Promise<User> {

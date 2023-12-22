@@ -5,7 +5,7 @@ import { Supply } from 'src/supply/entities/supply.entity';
 import { SupplySalesService } from 'src/supply-sales/supply-sales.service';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Sale } from './entities/sale.entity';
-import { Repository } from 'typeorm';
+import { Between, Repository } from 'typeorm';
 import { SupplySale } from 'src/supply-sales/entities/supply-sale.entity';
 
 @Injectable()
@@ -37,14 +37,32 @@ export class SalesService {
     return sale;
   }
 
-  async findAll() {
-    const sales = await this.saleRepository.find({
+  async findAll(
+    page: number,
+    perPage: number,
+    minTotalPrice: number,
+    maxTotalPrice: number,
+  ): Promise<{
+    data: any[];
+    page: number;
+    perPage: number;
+    totalPages: number;
+    count: number;
+  }> {
+    const [sales, count] = await this.saleRepository.findAndCount({
+      where: {
+        totalPrice: Between(minTotalPrice, maxTotalPrice),
+      },
       relations: ['supplySales.supply.product'],
+      take: perPage,
+      skip: perPage * (page - 1),
     });
 
-    return sales.map((sale) => {
-      return this.getReturnableSales(sale);
-    });
+    const totalPages = Math.ceil(count / perPage);
+
+    const data = sales.map((sale) => this.getReturnableSales(sale));
+
+    return { data, page, perPage, totalPages, count };
   }
 
   async findOne(id: string) {
@@ -72,5 +90,15 @@ export class SalesService {
     const { supplySales, ...rest } = sale;
 
     return { sale: rest, productsSales };
+  }
+
+  async remove(id: string) {
+    const removeResult = await this.saleRepository.delete(id);
+
+    if (removeResult.affected === 0) {
+      throw new NotFoundException(`Sale with id ${id} not found`);
+    }
+
+    return { message: `Sale with id ${id} was deleted` };
   }
 }

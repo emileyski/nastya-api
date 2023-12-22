@@ -23,7 +23,7 @@ export class CreateSupplyDto {
   @ApiProperty({
     description: 'Expiration date of product',
     type: Date,
-    example: new Date().setMonth(new Date().getMonth() + 1),
+    example: '2021-01-01',
   })
   @IsNotEmpty()
   expirationDate: Date;

@@ -3,7 +3,7 @@ import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Product } from './entities/product.entity';
-import { Repository } from 'typeorm';
+import { Like, Repository } from 'typeorm';
 
 @Injectable()
 export class ProductService {
@@ -21,8 +21,30 @@ export class ProductService {
   //TODO: add pagination
   //TODO: add filters
   //TODO: implement the correct functionality for retrieving images
-  findAll() {
-    return this.productRepository.find();
+  async findAll(
+    page: number,
+    perPage: number,
+    name: string,
+  ): Promise<{
+    data: Product[];
+    page: number;
+    perPage: number;
+    totalPages: number;
+  }> {
+    const [data, total] = await this.productRepository.findAndCount({
+      where: {
+        name: name ? Like(`%${name}%`) : Like('%%'),
+      },
+      skip: (page - 1) * perPage,
+      take: perPage,
+    });
+
+    return {
+      data,
+      page,
+      perPage,
+      totalPages: Math.ceil(total / perPage),
+    };
   }
 
   //TODO: implement the correct functionality for retrieving images

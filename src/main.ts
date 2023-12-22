@@ -1,17 +1,25 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
-import { Logger } from '@nestjs/common';
+import { Logger, ValidationPipe } from '@nestjs/common';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
+  app.useGlobalPipes(new ValidationPipe());
   app.setGlobalPrefix('api');
 
   const options = new DocumentBuilder()
     .setTitle('Shop backend')
     .setDescription('Shop API')
     .setVersion('1.0')
-    .addTag('auth')
+    .addBearerAuth({
+      type: 'http',
+      scheme: 'Bearer',
+      description: 'Enter access token here',
+      bearerFormat: 'Bearer ${token}',
+      in: 'header',
+      name: 'Authorization',
+    })
     .build();
 
   const document = SwaggerModule.createDocument(app, options);
@@ -20,7 +28,14 @@ async function bootstrap() {
 
   const PORT = process.env.PORT || 3000;
 
+  app.enableCors({ origin: 'http://localhost:5173' });
+
   await app.listen(PORT);
-  Logger.log(`🐰 API is running on port ${PORT}`, `bootstrap`);
+  Logger.log(`🐇 Server running on http://localhost:${PORT}`, `Bootstrap`);
+
+  Logger.log(
+    `📚 Swagger running on http://localhost:${PORT}/api/docs`,
+    `Bootstrap`,
+  );
 }
 bootstrap();

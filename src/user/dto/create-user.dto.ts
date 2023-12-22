@@ -35,14 +35,6 @@ export class CreateUserDto {
   role?: Roles;
 
   @ApiProperty({
-    description: 'The about of the user',
-    example: 'I am a good person',
-  })
-  @IsOptional()
-  @IsString()
-  about?: string;
-
-  @ApiProperty({
     description: 'Gender of the user',
     example: 'MALE',
   })

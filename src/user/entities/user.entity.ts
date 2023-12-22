@@ -26,9 +26,6 @@ export class User {
   @Column({ default: new Date() })
   createdAt: Date;
 
-  @Column({ nullable: true })
-  about?: string;
-
   @Column()
   gender: Genders;
 

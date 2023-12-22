@@ -9,6 +9,7 @@ import {
   UseInterceptors,
   UploadedFile,
   Put,
+  Query,
 } from '@nestjs/common';
 import { ProductService } from './product.service';
 import { CreateProductDto } from './dto/create-product.dto';
@@ -17,7 +18,7 @@ import { AccessTokenGuard } from 'src/core/guards/access-token.guard';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { imageFileFilter } from 'src/utils/file-upload.utils';
 import { Public } from 'src/core/decorators/public.decorator';
-import { ApiHeader, ApiTags } from '@nestjs/swagger';
+import { ApiHeader, ApiOperation, ApiQuery, ApiTags } from '@nestjs/swagger';
 
 @ApiTags('product')
 @Controller('product')
@@ -41,10 +42,40 @@ export class ProductController {
     return this.productService.create(createProductDto, picture);
   }
 
+  @ApiOperation({
+    summary: 'Get all products',
+    description: 'Get all products',
+  })
+  @ApiQuery({
+    name: 'page',
+    description: 'Page number',
+    required: false,
+    example: 1,
+  })
+  @ApiQuery({
+    name: 'perPage',
+    description: 'Users per page',
+    required: false,
+    example: 10,
+  })
+  @ApiQuery({
+    name: 'name',
+    description: 'User name',
+    required: false,
+    example: 'John',
+  })
   @Public()
   @Get()
-  findAll() {
-    return this.productService.findAll();
+  findAll(
+    @Query('name') name = '',
+    @Query('page') page = 1,
+    @Query('perPage') perPage = 10,
+  ) {
+    return this.productService.findAll(
+      parseInt(page.toString()),
+      parseInt(perPage.toString()),
+      name,
+    );
   }
 
   @Public()

@@ -6,45 +6,101 @@ import {
 import { CreateSupplyDto } from './dto/create-supply.dto';
 import { UpdateSupplyDto } from './dto/update-supply.dto';
 import { Supply } from './entities/supply.entity';
-import { MoreThan, Not, Repository } from 'typeorm';
+import { Between, LessThan, Like, MoreThan, Not, Repository } from 'typeorm';
 import { InjectRepository } from '@nestjs/typeorm';
+import { Product } from 'src/product/entities/product.entity';
 
 @Injectable()
 export class SupplyService {
   constructor(
     @InjectRepository(Supply)
     private readonly supplyRepository: Repository<Supply>,
+    @InjectRepository(Product)
+    private readonly productRepository: Repository<Product>,
   ) {}
 
-  create(createSupplyDto: CreateSupplyDto) {
-    return this.supplyRepository.save({
+  async create(createSupplyDto: CreateSupplyDto) {
+    const product = await this.productRepository.findOne({
+      where: { id: createSupplyDto.productId },
+    });
+
+    if (!product) {
+      throw new NotFoundException(
+        `Product with id ${createSupplyDto.productId} not found`,
+      );
+    }
+
+    const supply = this.supplyRepository.create({
       ...createSupplyDto,
+      product,
       currentCount: createSupplyDto.count,
       provisioner: { id: createSupplyDto.provisionerId },
-      product: { id: createSupplyDto.productId },
     });
+
+    await this.supplyRepository.save(supply);
+
+    return supply;
   }
 
   save(supply: Supply) {
     return this.supplyRepository.save(supply);
   }
 
-  //TODO: add pagination
-  //TODO: add filters
-  findAll() {
-    return this.supplyRepository.find();
-  }
-
-  findAllInStock() {
-    return this.supplyRepository.find({
-      where: {
-        inSale: true,
-        currentCount: MoreThan(0),
-        expirationDate: MoreThan(new Date()),
+  async findAll(
+    page: number,
+    perPage: number,
+    name: string,
+    minPrice: number,
+    maxPrice: number,
+    mustBeInSale: boolean,
+  ): Promise<{
+    data: Supply[];
+    page: number;
+    perPage: number;
+    totalPages: number;
+  }> {
+    const whereConditions: any = {
+      product: {
+        name: name ? Like(`%${name}%`) : Like('%%'),
       },
+      price: minPrice
+        ? MoreThan(minPrice)
+        : maxPrice
+        ? LessThan(maxPrice)
+        : Between(0, 1000000),
+    };
+
+    if (mustBeInSale) {
+      // Add additional conditions for supplies that must be in sale
+      whereConditions.inSale = true;
+    }
+
+    const [data, total] = await this.supplyRepository.findAndCount({
+      where: whereConditions,
+      skip: (page - 1) * perPage,
+      take: perPage,
       relations: ['product', 'provisioner'],
     });
+
+    return {
+      data,
+      page: +page,
+      perPage: +perPage,
+      totalPages: Math.ceil(total / perPage),
+    };
   }
+
+  // findAllInStock() {
+  //   return this.supplyRepository.find({
+  //     where: {
+  //       inSale: true,
+  //       currentCount: MoreThan(0),
+  //       expirationDate: MoreThan(new Date()),
+  //     },
+  //     relations: ['product', 'provisioner'],
+  //   });
+  // }
+
   findOne(id: string, options?: { relations?: string[] }) {
     return this.supplyRepository.findOne({ where: { id }, ...options });
   }

@@ -26,7 +26,7 @@ export class CreateProvisionerDto {
     description: 'Телефон поставщика',
     type: String,
     maxLength: 50,
-    example: '+380 50 123 45 67',
+    example: '+380501234567',
   })
   @IsNotEmpty()
   @IsString()

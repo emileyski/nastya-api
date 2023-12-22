@@ -33,6 +33,7 @@ export class AuthController {
   @Public()
   @HttpCode(200)
   signIn(@Body() signInDto: SignInDto): Promise<Tokens> {
+    console.log(signInDto);
     return this.authService.signIn(signInDto);
   }
 

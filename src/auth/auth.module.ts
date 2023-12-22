@@ -8,24 +8,7 @@ import { AccessTokenStrategy } from './strategies/access-token.strategy';
 import { FilesModule } from 'src/files/files.module';
 
 @Module({
-  imports: [
-    JwtModule,
-    forwardRef(() => UserModule),
-    FilesModule,
-    // ClientsModule.register([
-    //   {
-    //     name: 'AUTH_SERVICE',
-    //     transport: Transport.RMQ,
-    //     options: {
-    //       urls: ['amqp://localhost:5672'], //TODO: test this
-    //       queue: 'main_queue',
-    //       queueOptions: {
-    //         durable: false,
-    //       },
-    //     },
-    //   },
-    // ]),
-  ],
+  imports: [JwtModule, forwardRef(() => UserModule), FilesModule],
   controllers: [AuthController],
   providers: [AccessTokenStrategy, RefreshTokenStrategy, AuthService],
   exports: [AccessTokenStrategy, RefreshTokenStrategy],
